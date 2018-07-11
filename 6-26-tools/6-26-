@@ -1,0 +1,15 @@
+git——分布式管理工具
+	项目工作流程
+	常见命令
+repo——封装的git脚本
+	封装的简介
+adb——android调试工具
+	adb devices
+	adb shell
+	adb logcat
+opengrok——索引工具
+
+
+详见my_tool中的文档
+
+

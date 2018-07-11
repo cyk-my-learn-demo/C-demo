@@ -1,0 +1,4 @@
+汇报tools+framework
+	tools    repo文件中的REPO_URL   中转地址
+	framework 设备信息相关结构体的赋值时间    load
+		new framework API v2和HAL 3

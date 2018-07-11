@@ -1,0 +1,138 @@
+	分布式版本控制系统，可以有效、高速的处理从很小到非常大的项目版本管理。从一般开发者的角度来看，正正常使用git的流程：
+	1、从服务器上克隆完整的Git仓库（包括代码和版本信息）到单机上。
+	2、在自己的机器上根据不同的开发目的，创建分支，修改代码。
+	3、在单机上自己创建的分支上提交代码。
+	4、在单机上合并分支。
+	5、把服务器上最新版的代码fetch下来，然后跟自己的主分支合并。
+	6、生成补丁（patch），把补丁发送给主开发者。
+	7、看主开发者的反馈，如果主开发者发现两个一般开发者之间有冲突（他们之间可以合作解决的冲突），就会要求他们先解决冲突，然后再由其中一个人提交。如果主开发者可以自己解决，或者没有冲突，就通过。
+	8、一般开发者之间解决冲突的方法，开发者之间可以使用pull 命令解决冲突，解决完冲突之后再向主开发者提交补丁。
+
+Git 有三种状态：已提交（committed）、已修改（modified）和已暂存（staged）。
+	已提交表示数据已经安全的保存在本地数据库中。 
+	已修改表示修改了文件，但还没保存到数据库中。
+	已暂存表示对一个已修改文件的当前版本做了标记，使之包含在下次提交的快照中。
+
+基本的 Git 工作流程如下：
+	修改文件，在工作目录中修改文件。
+	暂存文件，将文件的快照放入暂存区域。
+	提交更新，找到暂存区域的文件，将快照永久性存储到 Git 仓库目录。
+
+安装git
+	sudo apt-get install git
+
+配置git
+	git config
+	例如: $ git config --global user.name "John"              用户名
+	      $ git config --global user.email john@example.com   邮箱
+	      $ git config --global core.editor emacs             指定文本编辑器为emacs（默认为vim）
+        git config --list 显示配置信息
+
+
+命令：
+1、获取库
+	初始化：   git init   在现有目录中初始化库
+	克隆  ：   git clone xxx（路径） 克隆以后的库，可从网络中获取
+2、状态
+	检查：     git status
+	添加跟踪： git add <file>
+	忽略：     .gitigonre  忽略文件
+	比较：     git diff  当前文件和暂存文件
+	           git diff --cached/staged   暂存文件和提交文件
+	提交更新： git commit       -a  跳过暂存，直接提交
+	移除:      git rm       (\: 文件拓展模式 )
+	移动：     git mv        rm+add
+	历史：     git log
+	撤销：     git commit  --amend   第二次提交将代替第一次提交的结果   撤销提交
+		   git reset HEAD <file>   取消暂存
+		   git checkout ——<file>   取消修改
+3、远程操作： git remote
+           添加：  git remote add <shortname> <url>   添加一个新的远程 Git 仓库
+	           git remote add pb https://xxx      添加并改名
+	   拉取：  git fetch xx  
+	   推送：  git push  [remote-name] [branch-name]  
+	   查看：  git remote show [remote-name]
+	   重命名： git remote rename xxx xxx
+	   移除：   git remote rm xxx
+4、标签
+	列出标签：git tag
+	附注标签：git tag -a v1.4 -m 'my version 1.4'   带有详细信息的标签
+		显示了打标签者的信息、打标签的日期时间、附注信息
+	轻量标签：git tag v1.4-lw   轻量标签本质上是将提交校验和存储到一个文件中 - 没有保存任何其他信息
+	后期打标签：git tag -a v1.2 9fceb02(git log --pretty=oneline)  
+	共享标签：git push origin [tagname]
+	检出标签： git checkout -b [branchname] [tagname]
+
+5、别名：	   git config --global alias.st status
+6、分支：
+	Git仓库中包含：blob 对象（保存着文件快照）、树对象（记录着目录结构和 blob 对象索引）提交对象（包含着指向前述树对象的指针和所有提交信息）。
+
+	创建分支：git branch name  
+	修改HEAD指向：git checkout name 
+		      git checkout -b name <==> branch + checkout
+	查询分支: git log --oneline --decorate --graph --all
+	
+	合并
+	当你试图合并两个分支时，如果顺着一个分支走下去能够到达另一个分支，那么 Git 在合并两者的时候，只会简单的将指针向前推进，因为这种情况下的合并操作没有需要解决的分歧——这就叫做 “快进（fast-forward）
+	 git checkout master
+	 git merge next
+	Git 会使用两个分支的末端所指的快照以及这两个分支的工作祖先，做一个简单的三方合并。
+	管理：	
+	查看每一个分支的最后一次提交，可以运行 git branch -v 
+	--merged 与 --no-merged 这两个有用的选项可以过滤这个列表中已经合并或尚未合并到当前分支的分支。
+
+
+× 远程分支和变基
+	git fetch teamone 来抓取远程仓库 teamone 有而本地没有的数据
+	git push (remote) (branch):推送
+	从一个远程跟踪分支检出一个本地分支会自动创建一个叫做 “跟踪分支”
+	git push origin --delete serverfix 删除
+
+	变基：git rebase master
+	合并（快进）：git merge
+	要用它得遵守一条准则：
+		不要对在你的仓库外有副本的分支执行变基。
+	只对尚未推送或分享给别人的本地修改执行变基操作清理历史，从不对已推送至别处的提交执行变基操作，这样，你才能享受到两种方式带来的便利。
+7、协议：
+	Git 可以使用四种主要的协议来传输资料：本地协议（Local），HTTP 协议，SSH（Secure Shell）协议及 Git 协议。 
+本地协议（Local）:
+	共享文件系统       |      这个协议并不保护仓库避免意外的损坏   nfs和挂载配置不方便，速度也慢
+HTTP 协议：
+	智能/哑http   用户名+密码/挂钩  url   |     HTTP 协议也非常快和高效   可以加密数据 企业防火墙都会允许 |  架设HTTP/S协议的服务端会比SSH协议的棘手一些   HTTP上使用需授权的推送，管理凭证会比使用SSH密钥认证麻烦一些
+ssh协议：
+	SSH 架设相对简单   SSH 访问是安全的  SSH 协议很高效，在传输前也会尽量压缩数据。 适合公司内部使用|  不能通过他实现匿名访问   不利于开源的项目   
+Git协议：
+	特殊的守护进程	 监听在一个特定的端口（9418）  git-daemon-export-ok 文件  |   最快的  |缺乏授权机制   配置 xinetd 或者其他的程序   企业防火墙通常会封锁这个端口
+
+
+在服务器上搭建 Git
+裸仓库——即一个不包含当前工作目录的仓库
+	git clone --bare project project.git
+裸库放到服务器上
+	scp -r xxx.git user@域名:目录/xxx.git
+ssh连接服务器克隆
+	git clone user@user@域名:目录/xxx.git
+获取库
+	 ssh user@git.example.com
+	 cd /opt/git/my_project.git
+	 git init --bare --shared
+ssh连接
+
+
+ssh密钥生成
+	cd ~/.ssh
+
+	ssh-keygen(输入位置+口令)
+	
+	cat ~/.ssh/xxx.pub
+	显示的内容为密钥
+git守护进程（9418）
+	以守护进程的形式运行该命令  git daemon --reuseaddr --base-path=/opt/git/ /opt/git/
+	Upstart 脚本<==>进程以守护进程的方式运行
+
+储藏
+	git stash
+	git stash save "test-cmd-stash"    stash@{0}: On autoswitch: test-cmd-stash
+
+		
+	

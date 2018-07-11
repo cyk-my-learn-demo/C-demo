@@ -1,0 +1,22 @@
+	http://localhost:8080/source
+出错
+	There was an error!
+
+	CONFIGURATION parameter has not been configured in web.xml! Please configure your webapp.
+
+	Unable to determine source root path. Missing configuration?
+
+	https://mazhuang.org/2016/12/14/rtfsc-with-opengrok/#%E5%90%8E%E8%AF%9D
+
+	这一般是由于更新或切换了 OpenGrok 版本，但却没有将 tomcat 的 webapps 目录下的 source 文件夹替换为对应版本
+
+
+出错
+	HTTP Status 500 - javax.servlet.ServletException: java.lang.NoClassDefFoundError: Could not initialize class org.opensolaris.opengrok.analysis.AnalyzerGuru
+
+	
+
+Full Search: 进行全文搜索，会匹配所有的单词、字符串、标识符以及数字等，
+Definition：搜索符号定义相关的代码
+Symbol：搜索符号
+File Path：搜索源码文件名中包含给定字符串的文件

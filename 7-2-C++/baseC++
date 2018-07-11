@@ -1,0 +1,233 @@
+restrict:由 restrict 修饰的指针是唯一一种访问它所指向的对象的方式。只有 C99 增加了新的类型限定符 restrict。\
+
+从 C++ 11 开始，auto 关键字不再是 C++ 存储类说明符，且 register 关键字被弃用。
+
+数学函数
+	1	double cos(double);
+	该函数返回弧度角（double 型）的余弦。
+	2	double sin(double);
+	该函数返回弧度角（double 型）的正弦。
+	3	double tan(double);
+	该函数返回弧度角（double 型）的正切。
+	4	double log(double);
+	该函数返回参数的自然对数。
+	5	double pow(double, double);
+	假设第一个参数为 x，第二个参数为 y，则该函数返回 x 的 y 次方。
+	6	double hypot(double, double);
+	该函数返回两个参数的平方总和的平方根，也就是说，参数为一个直角三角形的两个直角边，函数会返回斜边的长度。
+	7	double sqrt(double);
+	该函数返回参数的平方根。
+	8	int abs(int);
+	该函数返回整数的绝对值。
+	9	double fabs(double);
+	该函数返回任意一个十进制数的绝对值。
+	10	double floor(double);
+	该函数返回一个小于或等于传入参数的最大整数。
+
+时间
+	1	time_t time(time_t *time);
+	该函数返回系统的当前日历时间，自 1970 年 1 月 1 日以来经过的秒数。如果系统没有时间，则返回 .1。
+	2	char *ctime(const time_t *time);
+	该返回一个表示当地时间的字符串指针，字符串形式 day month year hours:minutes:seconds year\n\0。
+	3	struct tm *localtime(const time_t *time);
+	该函数返回一个指向表示本地时间的 tm 结构的指针。
+	4	clock_t clock(void);
+	该函数返回程序执行起（一般为程序的开头），处理器时钟所使用的时间。如果时间不可用，则返回 .1。
+	5	char * asctime ( const struct tm * time );
+	该函数返回一个指向字符串的指针，字符串包含了 time 所指向结构中存储的信息，返回形式为：day month date hours:minutes:seconds year\n\0。
+	6	struct tm *gmtime(const time_t *time);
+	该函数返回一个指向 time 的指针，time 为 tm 结构，用协调世界时（UTC）也被称为格林尼治标准时间（GMT）表示。
+	7	time_t mktime(struct tm *time);
+	该函数返回日历时间，相当于 time 所指向结构中存储的时间。
+	8	double difftime ( time_t time2, time_t time1 );
+	该函数返回 time1 和 time2 之间相差的秒数。
+	9	size_t strftime();
+	该函数可用于格式化日期和时间为指定的格式。
+
+		#include <iostream>
+		#include <ctime>
+		 
+		using namespace std;
+		 
+		int main( )
+		{
+		   // 基于当前系统的当前日期/时间
+		   time_t now = time(0);
+		   
+		   // 把 now 转换为字符串形式
+		   char* dt = ctime(&now);
+		 
+		   cout << "本地日期和时间：" << dt << endl;
+		 
+		   // 把 now 转换为 tm 结构
+		   tm *gmtm = gmtime(&now);
+		   dt = asctime(gmtm);
+		   cout << "UTC 日期和时间："<< dt << endl;
+		}
+
+		#include <iostream>
+		#include <ctime>
+		 
+		using namespace std;
+		 
+		int main( )
+		{
+		   // 基于当前系统的当前日期/时间
+		   time_t now = time(0);
+		 
+		   cout << "1970 到目前经过秒数:" << now << endl;
+		 
+		   tm *ltm = localtime(&now);
+		 
+		   // 输出 tm 结构的各个组成部分
+		   cout << "年: "<< 1900 + ltm->tm_year << endl;
+		   cout << "月: "<< 1 + ltm->tm_mon<< endl;
+		   cout << "日: "<<  ltm->tm_mday << endl;
+		   cout << "时间: "<< ltm->tm_hour << ":";
+		   cout << ltm->tm_min << ":";
+		   cout << ltm->tm_sec << endl;
+		}
+		#include <iostream>
+		#include <ctime>
+		#include <stdlib.h>
+		#include <stdio.h>
+
+		using namespace std;
+
+		string  Get_Current_Date();
+
+		int main( )
+		{
+		    // 将当前日期以 20** - ** - ** 格式输出
+		    cout << Get_Current_Date().c_str() << endl;
+
+		    getchar();
+		    return 0;
+		}
+
+		string  Get_Current_Date()
+		{
+		    time_t nowtime;  
+		    nowtime = time(NULL); //获取日历时间   
+		    char tmp[64];   
+		    strftime(tmp,sizeof(tmp),"%Y-%m-%d",localtime(&nowtime));   
+		    return tmp;
+		}
+继承权限
+	访问	        public	  protected	private
+	同一个类	yes	  yes	        yes
+	派生类	        yes	  yes	        no
+	外部的类	yes	  no	        no
+	一个派生类继承了所有的基类方法，但下列情况除外：
+
+	    基类的构造函数、析构函数和拷贝构造函数。
+	    基类的重载运算符。
+	    基类的友元函数。
+虚继承--（在创建对象的时候会创建一个虚表）在创建父类对象的时候
+运算符重载
+	Box operator+(const Box&);
+
+不可重载的运算符列表：
+    .：成员访问运算符
+    .*, ->*：成员指针访问运算符
+    ::：域运算符
+    sizeof：长度运算符
+    ?:：条件运算符
+    #： 预处理符号
+纯虚函数声明如下： virtual void funtion1()=0; 纯虚函数一定没有定义，纯虚函数用来规范派生类的行为
+
+
+    throw: 当问题出现时，程序会抛出一个异常。这是通过使用 throw 关键字来完成的。
+    catch: 在您想要处理问题的地方，通过异常处理程序捕获异常。catch 关键字用于捕获异常。
+    try: try 块中的代码标识将被激活的特定异常。它后面通常跟着一个或多个 catch 块。
+
+c++默认输出六位有效数字
+增加头文件#include<iomanip>
+cout<<setprecision(8)<<x;
+可以实现输出小数位
+
+signal:
+	信号 	        描述
+	SIGABRT 	程序的异常终止，如调用 abort。
+	SIGFPE 	        错误的算术运算，比如除以零或导致溢出的操作。
+	SIGILL  	检测非法指令。
+	SIGINT 	        接收到交互注意信号。
+	SIGSEGV 	非法访问内存。
+	SIGTERM 	发送到程序的终止请求。
+使用函数 raise() 生成信号
+
+异常
+	try
+	{
+	   // 保护代码
+	}catch( ExceptionName e )
+	{
+	  // 处理 ExceptionName 异常的代码
+	}
+	异常                     	描述
+	std::exception 	        该异常是所有标准 C++ 异常的父类。
+	std::bad_alloc     	该异常可以通过 new 抛出。
+	std::bad_cast 	        该异常可以通过 dynamic_cast 抛出。
+	std::bad_exception 	这在处理 C++ 程序中无法预期的异常时非常有用。
+	std::bad_typeid 	该异常可以通过 typeid 抛出。
+	std::logic_error 	理论上可以通过读取代码来检测到的异常。
+	std::domain_error 	当使用了一个无效的数学域时，会抛出该异常。
+	std::invalid_argument 	当使用了无效的参数时，会抛出该异常。
+	std::length_error 	当创建了太长的 std::string 时，会抛出该异常。
+	std::out_of_range 	该异常可以通过方法抛出，例如 std::vector 和 std::bitset<>::operator[]()。
+	std::runtime_error 	理论上不可以通过读取代码来检测到的异常。
+	std::overflow_error 	当发生数学上溢时，会抛出该异常。
+	std::range_error 	当尝试存储超出范围的值时，会抛出该异常。
+	std::underflow_error 	当发生数学下溢时，会抛出该异常。
+
+restrict	由 restrict 修饰的指针是唯一一种访问它所指向的对象的方式。只有 C99 增加了新的类型限定符 restrict。
+	主流的C++编译器都提供了restrict关键字的支持，只是似乎书写的形式有所变化，如可能是__restrict__，__restrict等 
+
+线程
+	c++ 11 之后有了标准的线程库：
+
+		#include <iostream>
+
+		#include <thread>
+
+		std::thread::id main_thread_id = std::this_thread::get_id();
+
+		void hello()  
+		{
+		    std::cout << "Hello Concurrent World\n";
+		    if (main_thread_id == std::this_thread::get_id())
+			std::cout << "This is the main thread.\n";
+		    else
+			std::cout << "This is not the main thread.\n";
+		}
+
+		void pause_thread(int n) {
+		    std::this_thread::sleep_for(std::chrono::seconds(n));
+		    std::cout << "pause of " << n << " seconds ended\n";
+		}
+
+		int main() {
+		    std::thread t(hello);
+		    std::cout << t.hardware_concurrency() << std::endl;//可以并发执行多少个(不准确)
+		    std::cout << "native_handle " << t.native_handle() << std::endl;//可以并发执行多少个(不准确)
+		    t.join();
+		    std::thread a(hello);
+		    a.detach();
+		    std::thread threads[5];                         // 默认构造线程
+
+		    std::cout << "Spawning 5 threads...\n";
+		    for (int i = 0; i < 5; ++i)
+			threads[i] = std::thread(pause_thread, i + 1);   // move-assign threads
+		    std::cout << "Done spawning threads. Now waiting for them to join:\n";
+		    for (auto &thread : threads)
+			thread.join();
+		    std::cout << "All threads joined!\n";
+		}
+
+	之前一些编译器使用 C++11 的编译参数是 -std=c++11
+
+	g++ -std=c++11 test.cpp -lpthread
+
+
+
+

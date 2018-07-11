@@ -1,0 +1,28 @@
+android 框架：
+	application framework
+	binder IPC proxies
+	android system services
+		media server
+		system server
+	HAL
+	KERNEL
+
+应用框架——面对上层软件开发着，提供调用底层设备的接口
+绑定IPC——高级框架API与系统服务交互的接口
+系统服务——系统+媒体    模块化的组件
+硬件抽象曾——硬件供应商提供，   闭源+通用
+linux内核——主要关心驱动曾，提供调用接口
+
+
+HAL层   还有待深入了解
+
+
+camera架构
+	应用层
+	JNI
+	lib
+	server
+	HAL
+
+
+

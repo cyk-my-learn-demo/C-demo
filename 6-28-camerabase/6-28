@@ -1,0 +1,95 @@
+camera架构 API v1
+	framework:是应用层软件直接使用的类，涵盖了启动、预览、拍摄及关闭等操作摄像头的全部接口.
+		framework/base/core/java/android/hardware/Camera.java
+		——camera类中open方法：
+			public static Camera open() {
+			    int numberOfCameras = getNumberOfCameras();                           //在android_hardware_Camera.cpp
+			    CameraInfo cameraInfo = new CameraInfo();                             //静态内部类，包含facing、orientation、canDisableShutterSound； 
+			    for (int i = 0; i < numberOfCameras; i++) {
+				getCameraInfo(i, cameraInfo);					  //调用native方法_getCameraInfo获取摄像头信息； 
+				if (cameraInfo.facing == CameraInfo.CAMERA_FACING_BACK) {
+				    return new Camera(i);
+				}
+			    }
+			    return null;
+			}
+		——camera类：
+			/** used by Camera#open, Camera#open(int) */
+			Camera(int cameraId) {
+			    int err = cameraInitNormal(cameraId);				  //camera构造器的核心实现在cameraInitNormal中，会调用cameraInitVersion。同时cameraInitNormal调用本地 													     方法native_setup()，由此进入到android_hardware_Camera.cpp中
+
+			    if (checkInitErrors(err)) {
+				switch(err) {
+				    case EACCESS:
+					throw new RuntimeException("Fail to connect to camera service");
+				    case ENODEV:
+					throw new RuntimeException("Camera initialization failed");
+				    default:
+					// Should never hit this.
+					throw new RuntimeException("Unknown camera error");
+				}
+			    }
+			}
+		——cameraInitVersion：
+			private int cameraInitVersion(int cameraId, int halVersion) {            //后者代表HAL的版本
+
+			    ……
+
+			    String packageName = ActivityThread.currentPackageName();
+			    return native_setup(new WeakReference<Camera>(this), cameraId, halVersion, packageName);
+			}
+	JNI：JNI 代码位于 frameworks/base/core/jni/android_hardware_Camera.cpp 中。此代码会调用较低级别的原生代码以获取对实体相机的访问权限，并返回用于在框架级别创建 android.hardware.Camera 对象的数据。
+		——native_setup
+			native_setup()被动态注册到JNI，通过JNI调用android_hardware_Camera_native_setup()方法
+				static JNINativeMethod camMethods[] = {
+				    ……
+				    { "native_setup",    "(Ljava/lang/Object;ILjava/lang/String;)V",
+				    (void*)android_hardware_Camera_native_setup }
+				    ……
+				};
+		——android_hardware_Camera_native_setup：
+			connect to camera service
+			Convert jstring to String16
+			Default path: hal version is don't care, do normal camera connect.
+			make sure camera hardware is alive
+			This should never happen
+			We use a weak reference so the Camera object can be garbage collected.
+			The reference is only used as a proxy for callbacks.
+			save context in opaque field
+			
+			调用Camera::connect()方法请求连接CameraService服务，Camera::connect()位于Camera.cpp中，由此进入到Library层
+
+	
+
+
+https://source.android.google.cn/devices/architecture/:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
